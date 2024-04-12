@@ -5,30 +5,48 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="./lib/svgIcons.js"></script>
+
 <script type="text/javascript">
-    document.addEventListener("DOMContentLoaded", function() {
-        svgIcons('./lib/icons.svg','rgb(23, 32, 42)');
+    function showAllIcons(){
+        fetch('./lib/icons.svg')
+        .then(response => {
+            return response.text();
+        })
+        .then(svgString => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(svgString, 'image/svg+xml');
+            const svgIds = Array.from(doc.querySelectorAll('svg[id]')).map(svg => svg.id + '__30px').slice(1);
+            svgIds.forEach(id => {
+                const div = document.createElement('div');
+                div.id = id;
+                div.className = 'icon_svg';
+                document.body.appendChild(div);
+                
+                const textNode = document.createTextNode(id);
+                if (div.nextSibling) {
+                    div.parentNode.insertBefore(textNode, div.nextSibling);
+                } else {
+                    div.parentNode.appendChild(textNode);
+                }
+            });
+            svgIcons('./lib/icons.svg','rgb(23, 32, 42)');
+        })
+        .catch(error => {
+            console.error('Error loading the SVG file:', error);
+        });
+        document.getElementById('btn_show_all').style.display = 'none';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        svgIcons('./lib/icons.svg');
     });
+
 </script>
 </head>
 <body>
-    <div id="icon_instagram__70px__E74C3C" class="icon_svg"></div>
-    <div id="icon_google__100px__1F618D" class="icon_svg"></div>
-    <div id="icon_credit_card__30px" class="icon_svg"></div>
-    <div id="icon_log-in__50px" class="icon_svg"></div>
-    <div id="icon_log-out__50px" class="icon_svg"></div>
-    <div id="icon_menu__30px" class="icon_svg"></div>
-    <div id="icon_cutlery__30px" class="icon_svg"></div>
-    <div id="icon_paste__30px" class="icon_svg"></div>
-    <div id="icon_shop__30px" class="icon_svg"></div>
-    <div id="icon_refresh__30px" class="icon_svg"></div>
-    <div id="icon_dollar__30px" class="icon_svg"></div>
-    <div id="icon_full-screen__30px" class="icon_svg"></div>
-    <div id="icon_settings__30px" class="icon_svg"></div>
-    <div id="icon_shopping-bag__30px" class="icon_svg"></div>
-    <div id="icon_coins__30px" class="icon_svg"></div>
-    <div id="icon_switch__30px" class="icon_svg"></div>
-    <div id="icon_text__30px" class="icon_svg"></div>
-    <div id="icon_trash__30px" class="icon_svg"></div>
+    <span>Basic usage:</span><br>
+    <span>&lt;div id="icon_instagram__30px__E74C3C" class="icon_svg"&gt;&lt;/div&gt;</span>
+    <div id="icon_instagram__30px__E74C3C" class="icon_svg"></div>
+    <button id="btn_show_all" onclick="showAllIcons()">Click to show all icons in svg file</button>
 </body>
 </html>
